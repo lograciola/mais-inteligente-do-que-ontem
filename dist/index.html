@@ -368,14 +368,14 @@ button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visi
  const soundPreferenceKey = 'miqo-sounds-enabled-v1';
  let soundEnabled = localStorage.getItem(soundPreferenceKey) !== 'false';
  const sounds = {
-   click:[[600,0,.035,.022]],
-   tick:[[260,0,.035,.024]],
-   winner:[[523,0,.12,.04],[659,.1,.12,.04],[784,.2,.18,.04]],
-   match:[[587,0,.11,.04],[784,.1,.16,.04]],
-   miss:[[220,0,.11,.025]],
-   countdown:[[820,0,.08,.04]],
-   done:[[660,0,.15,.05],[880,.17,.15,.05],[1047,.34,.22,.05]],
-   enabled:[[659,0,.08,.025],[784,.08,.12,.025]]
+   click:[[600,0,.035,.028]],
+   tick:[[260,0,.035,.03]],
+   winner:[[523,0,.12,.05],[659,.1,.12,.05],[784,.2,.18,.05]],
+   match:[[587,0,.11,.05],[784,.1,.16,.05]],
+   miss:[[220,0,.11,.03]],
+   countdown:[[820,0,.08,.055]],
+   done:[[660,0,.15,.06],[880,.17,.15,.06],[1047,.34,.22,.06]],
+   enabled:[[659,0,.08,.03],[784,.08,.12,.03]]
  };
  function updateSoundToggle() {
    const button = $('#soundToggle'), label = $('#soundToggleText');
@@ -480,7 +480,7 @@ button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visi
  function toggleFavorite(t){if(state.favorites.includes(t.id)){state.favorites=state.favorites.filter(i=>i!==t.id);state.wanted=state.wanted.filter(i=>i!==t.id);toast('Removido de quero estudar')}else{state.favorites.unshift(t.id);if(!state.wanted.includes(t.id))state.wanted.unshift(t.id);toast('Salvo em quero estudar')}persist();renderTopic();renderHome()}
  let studyDuration=25*60,speechDuration=120;
  function format(sec){sec=Math.max(0,Math.floor(sec));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
- function setTimer(kind,display,button,duration,remaining=duration){if(timers[kind]){clearInterval(timers[kind]);timers[kind]=null}let left=remaining,end=0,lastTick=0;$(display).textContent=format(left);$(button).textContent=kind==='study'?'iniciar':kind==='speech'?'iniciar discurso':'iniciar resposta';return{start(){if(timers[kind])return;if(left===0){left=duration;$(display).textContent=format(left)}end=Date.now()+left*1000;lastTick=Date.now();$(button).textContent='pausar';timers[kind]=setInterval(()=>{let now=Date.now();let remaining=Math.max(0,Math.ceil((end-now)/1000));if(remaining>0&&remaining<=3&&remaining<left)playSound('countdown');left=remaining;$(display).textContent=format(left);let elapsed=Math.floor((now-lastTick)/1000);if(elapsed>0){lastTick+=elapsed*1000;if(kind==='study')pendingSession.studySec+=elapsed;if(kind==='speech')pendingSession.speechSec+=elapsed;if(kind==='argument')pendingSession.argumentSec+=elapsed;persistActive()}if(left===0){clearInterval(timers[kind]);timers[kind]=null;$(button).textContent='reiniciar';persistActive();playSound('done');toast('Tempo concluído')}},200)},pause(){if(timers[kind]){clearInterval(timers[kind]);timers[kind]=null;left=Math.max(0,Math.ceil((end-Date.now())/1000));$(display).textContent=format(left);$(button).textContent='continuar';persistActive()}},reset(){if(timers[kind])clearInterval(timers[kind]);timers[kind]=null;left=duration;$(display).textContent=format(left);$(button).textContent=kind==='study'?'iniciar':kind==='speech'?'iniciar discurso':'iniciar resposta';persistActive()},toggle(){if(timers[kind])this.pause();else this.start()},getLeft(){return left},setDuration(n){duration=n;this.reset()}}}
+ function setTimer(kind,display,button,duration,remaining=duration){if(timers[kind]){clearInterval(timers[kind]);timers[kind]=null}let left=remaining,end=0,lastTick=0;$(display).textContent=format(left);$(button).textContent=kind==='study'?'iniciar':kind==='speech'?'iniciar discurso':'iniciar resposta';return{start(){if(timers[kind])return;if(left===0){left=duration;$(display).textContent=format(left)}end=Date.now()+left*1000;lastTick=Date.now();$(button).textContent='pausar';timers[kind]=setInterval(()=>{let now=Date.now();let remaining=Math.max(0,Math.ceil((end-now)/1000));if(remaining>0&&remaining<left)playSound('countdown');left=remaining;$(display).textContent=format(left);let elapsed=Math.floor((now-lastTick)/1000);if(elapsed>0){lastTick+=elapsed*1000;if(kind==='study')pendingSession.studySec+=elapsed;if(kind==='speech')pendingSession.speechSec+=elapsed;if(kind==='argument')pendingSession.argumentSec+=elapsed;persistActive()}if(left===0){clearInterval(timers[kind]);timers[kind]=null;$(button).textContent='reiniciar';persistActive();playSound('done');toast('Tempo concluído')}},200)},pause(){if(timers[kind]){clearInterval(timers[kind]);timers[kind]=null;left=Math.max(0,Math.ceil((end-Date.now())/1000));$(display).textContent=format(left);$(button).textContent='continuar';persistActive()}},reset(){if(timers[kind])clearInterval(timers[kind]);timers[kind]=null;left=duration;$(display).textContent=format(left);$(button).textContent=kind==='study'?'iniciar':kind==='speech'?'iniciar discurso':'iniciar resposta';persistActive()},toggle(){if(timers[kind])this.pause();else this.start()},getLeft(){return left},setDuration(n){duration=n;this.reset()}}}
  let studyClock,speechClock,argClock;
  const sessionLabels={study:'Etapa 1 de 3 · Estudo',speech:'Etapa 2 de 3 · Oratória',argument:'Etapa 3 de 3 · Argumentação',complete:'Sessão pronta para salvar'};
  function persistActive(stage=activePage){
