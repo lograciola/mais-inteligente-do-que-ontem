@@ -16,7 +16,7 @@
 html{overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
 .roulette{--row:76px;height:var(--row);overflow:hidden;border-block:1px solid rgba(255,255,255,.5)}
 .roulette-track{will-change:transform}
-.roulette-title{display:flex;align-items:center;height:var(--row);padding:8px 0;font:600 clamp(15px,2.2vw,24px)/1.15 var(--display);overflow-wrap:anywhere}
+.roulette-title{display:flex;align-items:center;height:var(--row);min-height:var(--row);padding:8px 0;font:600 clamp(15px,2.2vw,24px)/1.15 var(--display);overflow:hidden}.roulette-title>span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .primary:disabled{cursor:wait;transform:none}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .mast{padding:12px 0 24px;gap:4vw;align-items:center}.mast h1{font-size:clamp(44px,6vw,82px);line-height:.92;margin-top:12px}.mast-note{font-size:18px}
@@ -440,7 +440,9 @@ button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visi
    track.replaceChildren(...titles.map(topic => {
      const row = document.createElement('div');
      row.className = 'roulette-title';
-     row.textContent = topic.title;
+     const title = document.createElement('span');
+     title.textContent = topic.title;
+     row.append(title);
      return row;
    }));
    track.style.transform = 'translateY(0)';
@@ -449,7 +451,7 @@ button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visi
    $('#drawIdle').hidden = true;
    $('#drawCategory').disabled = true;
    $('#drawStatus').textContent = 'Sorteando um tema';
-   const travel = titles.length - 1, rowHeight = track.firstElementChild.offsetHeight;
+   const travel = titles.length - 1, rowHeight = track.firstElementChild.getBoundingClientRect().height;
    const duration = reduced ? 300 : 4400;
    let start = null, lastRow = -1, lastTick = -Infinity;
    function frame(now) {
